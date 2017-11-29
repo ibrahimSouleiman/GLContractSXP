@@ -202,74 +202,59 @@
 
     	}
 
-    	                     //nicks.push(currentUser.nick);
-            var messageContent = "The User '"+currentUser.nick+"' have created forum for the contract '"+contract.title+"'";
-            var message = new Message({
-                receivers: contract.parties,
-                receiversNicks: nicks,
-                messageContent: messageContent,
-                contractID : contract.id,
-                ContractTitle : contract.title,
-                chatID: contract.chatID
-            });
+                  var currentUser = User.get({
+                           id: $scope.app.userid
+                       });
+       	           $scope.addForum = function (contract){
+                                var nicks = [];
 
-            Oboe(
-                {
-                    url: RESTAPISERVER + "/api/messages/"+contract.id,
-                    method:'GET',
-                    pattern: "!",
-                    withCredentials: true,
-                    headers: {'Auth-Token': $http.defaults.headers.common['Auth-Token']},
-                    start: function (stream) {
-                        // handle to the stream
-                        $scope.stream = stream;
-                        $scope.status = 'started';
-                        $scope.searchMessages = true;
-                    },
-                    done: function (parsedJSON) {
-                        $scope.status = 'done';
-                        $scope.searchMessages = false;
-                    }
-                }).then(function () {
-            }, function (error) {
-            }, function (node) {
-                    console.log(node);
-                if (node.length === 0 || node == null ) {
-                    Oboe({
-                        url: RESTAPISERVER + "/api/messages/",
-                        method: 'POST',
-                        body: message,
-                        withCredentials: true,
-                        headers: {'Auth-Token': $http.defaults.headers.common['Auth-Token']},
-                        start: function (stream) {
-                            // handle to the stream
-                            $scope.stream = stream;
-                            $scope.status = 'started';
-                            $scope.sendMessage = true;
-                        },
-                        done: function (parsedJSON) {
-                            $scope.status = 'done';
-                            $scope.sendMessage = false;
-                        }
-                    }).then(function () {
+                                for (var i = 0; i<contract.partiesNames.length;i++){
+                                    nicks.push(contract.partiesNames[i].value);
+                                }
 
-                    }, function (error) {
-                        $scope.sendMessage = false;
-                        console.log("erreur lors de l'envoie du message");
-                    }, function (node) {
-                        if (node != null && node.length != 0) {
-                            $scope.sendMessage = false;
-                            $rootScope.isForumMessage = contract.id;
+                                //nicks.push(currentUser.nick);
+                                  var messageContent = "The User '"+currentUser.nick+"' have created forum for the contract '"+contract.title+"'";
+                                          var message = new Message({
+                                              receivers: contract.parties,
+                                              receiversNicks: nicks,
+                                              messageContent: messageContent,
+                                              contractID : contract.id,
+                                              ContractTitle : contract.title,
+                                              chatID: contract.chatID
+                                          });
+                                Oboe({
+                                    url: RESTAPISERVER + "/api/messages/",
+                                    method: 'POST',
+                                    body: message,
+                                    withCredentials: true,
+                                    headers: {'Auth-Token': $http.defaults.headers.common['Auth-Token']},
+                                    start: function (stream) {
+                                        // handle to the stream
+                                        $scope.stream = stream;
+                                        $scope.status = 'started';
+                                        $scope.sendMessage = true;
+                                    },
+                                    done: function (parsedJSON) {
+                                        $scope.status = 'done';
+                                        $scope.sendMessage = false;
+                                    }
+                                }).then(function () {
 
-                            $state.go('messages');
-                        }
-                    });
-                }else{
-                    $state.go('messages');
-                }
+                                }, function (error) {
+                                    $scope.sendMessage = false;
+                                },  function (node) {
+                                     if (node != null && node.length != 0) {
+                                     $scope.sendMessage = false;
+                                     $rootScope.isForumMessage = contract.id;
+                                     $state.go('messages');
+                                      }else{
+                                                       $state.go('messages');
+                                            } });
 
-            });
-}
+                            }
+
+
+
         	        $scope.form = false;
         	        $scope.forum = function () {
         	            $scope.form = !$scope.form;
@@ -477,6 +462,7 @@
 
                   		contract.$update(function() {
                   			$state.go('viewContracts');
+                  			console.log("Status"+contract.status);
 
                   	  });
 				}
@@ -561,19 +547,87 @@
             + "before any items has been exchanged."
         /***********************************************/
 
-        /****** Indicators for the modification of an implementing and termination modality ******/
-        $scope.modifExchMod = {
-            toModify : false, // indicate wheter a modality has to be modified
-            index : -1 // modifying modality's index
-        };
-        $scope.modifImpMod = {
-            toModify : false, // indicate wheter a modality has to be modified
-            index : -1 // modifying modality's index
-        };
-        $scope.modifTermMod = {
-            toModify : false, // indicate wheter a modality has to be modified
-            index : -1 // modifying modality's index
-        };
+
+			/****** Indicators for the modification of an implementing and termination modality ******/
+			$scope.modifExchMod = {
+        		 toModify : false, // indicate wheter a modality has to be modified
+        		 index : -1 // modifying modality's index
+        			};
+			$scope.modifImpMod = {
+				toModify : false, // indicate wheter a modality has to be modified
+				index : -1 // modifying modality's index
+			};
+			$scope.modifTermMod = {
+				toModify : false, // indicate wheter a modality has to be modified
+				index : -1 // modifying modality's index
+			};
+
+			 /****** All the functions to add, delete or modify informations about the contract ******/
+			$scope.updateParties = function() {updateParties($scope)};
+			$scope.updateExchanges = function() {updateExchanges($scope)};
+			$scope.updateImpModalities = function() {updateImpModalities($scope)};
+			$scope.updateTermModalities = function() {updateTermModalities($scope)};
+
+
+
+			$scope.deleteParty = function(p) {deleteParty($scope,p)};
+			$scope.deleteExchange = function(c) {deleteExchange($scope,c)};
+			$scope.deleteImpModality = function(m) {deleteImpModality($scope, m)};
+			$scope.deleteTermModality = function(m) {deleteTermModality($scope, m)};
+
+			$scope.modifyExchangeModality = function(m) {modifyExchangeModality($scope,m)};
+			$scope.modifyImpModality = function(m) {modifyImpModality($scope,m)};
+			$scope.modifyTermModality = function(c) {modifyTermModality($scope,c)};
+			$scope.cancelImpModality = function() {cancelImpModality($scope)};
+			$scope.cancelTermModality = function() {cancelTermModality($scope)};
+			$scope.cancelExchModality = function() {cancelExchModality($scope)};
+
+			$scope.validateImpModality = function() {validateImpModality($scope)};
+			$scope.validateTermModality = function() {validateTermModality($scope)};
+			$scope.validateExchangeModality = function(m) {validateExchangeModality($scope,m)};
+			$scope.updateItems = function() {updateItems($http, $scope)};
+            $scope.updatehow = function(choice) {updatehow($scope,choice)};
+
+			/*******************************************************************/
+
+			/****** Submit button function ******/
+    	$scope.submit = function() {
+
+
+
+
+				// isOK is a boolean indicating wether the user has entered all the mandatory informations about the contract
+				var isOK = checkClauses($scope);
+				if (isOK)
+				{
+					var partiesId = [];
+					$scope.partiesList.forEach(function(party) {
+						partiesId.push(party.key);
+					});
+
+
+					buildExchangesStr($scope);
+
+
+	    		if ($scope.form.addParty != null && $scope.form.addParty.length>2){updateParties($scope);}
+	    		if ($scope.form.addTermModality != null && $scope.form.addTermModality.length>2){updateTermModalities($scope);}
+	            if ($scope.form.addImpModality != null && $scope.form.addImpModality.length>2){updateImpModalities($scope);}
+
+	    		var contract = new Contract({
+		    		    title : $scope.form.title,
+						parties : partiesId,
+						exchange : $scope.exchangesStr,
+						termination : $scope.termModalities,
+	    			    implementing : $scope.impModalities
+					});
+
+
+	      	// Create the contract in the database thanks to restApi.js
+	    		contract.$save(function() {
+						$state.go('viewContracts');
+					});
+	}
+	}
 
     });
 
@@ -801,6 +855,7 @@ function deleteParty($scope, p){
 
 /****** Functions to handle the adding of a clause : party, exchange, implementing modality, termination modality ******/
 function updateParties($scope){
+   console.log("T1");
 	var addParty = $scope.form.addParty.split(" - ");
   var newParty = {value : addParty[0], key : addParty[1]};
   var index = $scope.partiesList.findIndex(party => party.key === newParty.key);

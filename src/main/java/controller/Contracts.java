@@ -129,6 +129,7 @@ public class Contracts {
 		return ret;
 	}
 
+
 	@PUT
 	@Path("/{id}")
 
@@ -153,10 +154,10 @@ public class Contracts {
 		for (ContractEntity contract : contracts){
 			if (contract.getParties().contains(c.getUserid())){
 				if (contract.getWish().equals(Wish.NEUTRAL)){
+					contract.setStatus(Status.MODIFIED);
 					contract.setImplementing(c.getImplementing());
 					contract.setExchange(c.getExchange());
-                                        contract.setTermination(c.getTermination());
-					contract.setStatus(Status.MODIFIED);
+					contract.setTermination(c.getTermination());
 					contract.setParties(parties);
 					contract.setTitle(c.getTitle());
 					contract.setPartiesNames(partiesNames);
@@ -167,7 +168,7 @@ public class Contracts {
 		}
 		em.end();
 		em.close();
-        updateContract(token,cRes.getId(),Wish.NEUTRAL);
+		updateContract(token,cRes.getId(),Wish.NEUTRAL);
 		JsonTools<ContractEntity> json = new JsonTools<>(new TypeReference<ContractEntity>(){});
 
 		return json.toJson(cRes);
