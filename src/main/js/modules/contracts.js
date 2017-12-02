@@ -240,7 +240,6 @@
                         }).then(function () {
                       }, function (error) {
                       }, function (node) {
-                          console.log(node);
                         if (node.length === 0 || node == null ) {
                           Oboe({
                             url: RESTAPISERVER + "/api/messages/",
@@ -261,7 +260,6 @@
                           }).then(function () {
                           }, function (error) {
                             $scope.sendMessage = false;
-                            console.log("erreur lors de l'envoie du message");
                           }, function (node) {
                             if (node != null && node.length != 0) {
                               $scope.sendMessage = false;
@@ -483,7 +481,6 @@
 
                   		contract.$update(function() {
                   			$state.go('viewContracts');
-                  			console.log("Status"+contract.status);
 
                   	  });
 				}
@@ -728,7 +725,6 @@ $scope.form.electronicallyEmailfrom = e.emailfrom;
 $scope.form.electronicallyEmailto = e.emailto;
 $scope.form.electronicallyWhenfrom = e.whenfrom;
 $scope.modifExchMod.index = $scope.exchanges.indexOf(e);
-console.log("Update="+$scope.form.electronicallyWhenfrom)
 }
 
 
@@ -875,7 +871,6 @@ function deleteParty($scope, p){
 
 /****** Functions to handle the adding of a clause : party, exchange, implementing modality, termination modality ******/
 function updateParties($scope){
-   console.log("T1");
 	var addParty = $scope.form.addParty.split(" - ");
   var newParty = {value : addParty[0], key : addParty[1]};
   var index = $scope.partiesList.findIndex(party => party.key === newParty.key);
@@ -1173,7 +1168,6 @@ $scope.howchoice={from : splitedEx[0],
                    whenfrom:splitedEx[6],
                    details : splitedEx[7]};
 
-console.log("Ib="+$scope.howchoice.whenfrom)
 }
 return  $scope.howchoice;
 
