@@ -205,54 +205,75 @@
                   var currentUser = User.get({
                            id: $scope.app.userid
                        });
-       	           $scope.addForum = function (contract){
-                                var nicks = [];
-
-                                for (var i = 0; i<contract.partiesNames.length;i++){
-                                    nicks.push(contract.partiesNames[i].value);
-                                }
-
-                                //nicks.push(currentUser.nick);
-                                  var messageContent = "The User '"+currentUser.nick+"' have created forum for the contract '"+contract.title+"'";
-                                          var message = new Message({
-                                              receivers: contract.parties,
-                                              receiversNicks: nicks,
-                                              messageContent: messageContent,
-                                              contractID : contract.id,
-                                              ContractTitle : contract.title,
-                                              chatID: contract.chatID
-                                          });
-                                Oboe({
-                                    url: RESTAPISERVER + "/api/messages/",
-                                    method: 'POST',
-                                    body: message,
-                                    withCredentials: true,
-                                    headers: {'Auth-Token': $http.defaults.headers.common['Auth-Token']},
-                                    start: function (stream) {
-                                        // handle to the stream
-                                        $scope.stream = stream;
-                                        $scope.status = 'started';
-                                        $scope.sendMessage = true;
-                                    },
-                                    done: function (parsedJSON) {
-                                        $scope.status = 'done';
-                                        $scope.sendMessage = false;
-                                    }
-                                }).then(function () {
-
-                                }, function (error) {
-                                    $scope.sendMessage = false;
-                                },  function (node) {
-                                     if (node != null && node.length != 0) {
-                                     $scope.sendMessage = false;
-                                     $rootScope.isForumMessage = contract.id;
-                                     $state.go('messages');
-                                      }else{
-                                                       $state.go('messages');
-                                            } });
-
+       	            $scope.addForum = function (contract){
+                      var nicks = [];
+                      for (var i = 0; i<contract.partiesNames.length;i++){
+                        nicks.push(contract.partiesNames[i].value);
+                      }
+                      //nicks.push(currentUser.nick);
+                      var messageContent = "The User '"+currentUser.nick+"' have created forum for the contract '"+contract.title+"'";
+                      var message = new Message({
+                        receivers: contract.parties,
+                        receiversNicks: nicks,
+                        messageContent: messageContent,
+                        contractID : contract.id,
+                        ContractTitle : contract.title,
+                        chatID: contract.chatID
+                      });
+                      Oboe(
+                        {
+                          url: RESTAPISERVER + "/api/messages/"+contract.id,
+                          method:'GET',
+                          pattern: "!",
+                          withCredentials: true,
+                          headers: {'Auth-Token': $http.defaults.headers.common['Auth-Token']},
+                          start: function (stream) {
+                            // handle to the stream
+                            $scope.stream = stream;
+                            $scope.status = 'started';
+                            $scope.searchMessages = true;
+                          },
+                          done: function (parsedJSON) {
+                            $scope.status = 'done';
+                            $scope.searchMessages = false;
+                          }
+                        }).then(function () {
+                      }, function (error) {
+                      }, function (node) {
+                          console.log(node);
+                        if (node.length === 0 || node == null ) {
+                          Oboe({
+                            url: RESTAPISERVER + "/api/messages/",
+                            method: 'POST',
+                            body: message,
+                            withCredentials: true,
+                            headers: {'Auth-Token': $http.defaults.headers.common['Auth-Token']},
+                            start: function (stream) {
+                              // handle to the stream
+                              $scope.stream = stream;
+                              $scope.status = 'started';
+                              $scope.sendMessage = true;
+                            },
+                            done: function (parsedJSON) {
+                              $scope.status = 'done';
+                              $scope.sendMessage = false;
                             }
-
+                          }).then(function () {
+                          }, function (error) {
+                            $scope.sendMessage = false;
+                            console.log("erreur lors de l'envoie du message");
+                          }, function (node) {
+                            if (node != null && node.length != 0) {
+                              $scope.sendMessage = false;
+                              $rootScope.isForumMessage = contract.id;
+                              $state.go('messages');
+                            }
+                          });
+                        }else{
+                          $state.go('messages');
+                        }
+                      });
+                    }
 
 
         	        $scope.form = false;
@@ -667,9 +688,8 @@ $scope.choice=$scope.form.addHow;
 
 
 
-//getChoiceExchange($scope,$scope.choice);
-updatehow($scope,$scope.choice);
-updateAllchoice($scope,e,$scope.choice)
+updatehow($scope,$scope.choice);//this funtion you can help to see some form
+updateAllchoice($scope,e,$scope.choice)// this function update to form after how Exchange
 
 
 }
@@ -686,7 +706,7 @@ $scope.form.deliveryUserfrom = e.userfrom;
 $scope.form.deliveryUserto = e.userto;
 $scope.form.deliveryDatefrom = e.datefrom;
 $scope.form.deliverySendmodefrom=e.sendhowfrom;
-
+$scope.modifExchMod.index = $scope.exchanges.indexOf(e);
 
 
 }else if(choice.length == 10)
@@ -707,8 +727,8 @@ $scope.form.electronicallyEmailfrom = e.emailfrom;
 
 $scope.form.electronicallyEmailto = e.emailto;
 $scope.form.electronicallyWhenfrom = e.whenfrom;
-$scope.form.electronicallyWhento = e.whento;
-
+$scope.modifExchMod.index = $scope.exchanges.indexOf(e);
+console.log("Update="+$scope.form.electronicallyWhenfrom)
 }
 
 
@@ -1153,7 +1173,7 @@ $scope.howchoice={from : splitedEx[0],
                    whenfrom:splitedEx[6],
                    details : splitedEx[7]};
 
-
+console.log("Ib="+$scope.howchoice.whenfrom)
 }
 return  $scope.howchoice;
 

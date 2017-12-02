@@ -23,7 +23,7 @@
 	<div class="form-group panel-success">
 		<div class="panel-heading">
 			<label class="control-label">
-				<span class="glyphicon glyphicon-user"></span> Party
+				<span class="glyphicon glyphicon-user"></span> Party*
 			</label>
 		</div>
 		</br>
@@ -52,7 +52,7 @@
 	<div class="form-group panel-success">
 		<div class="panel-heading">
 			<label class="control-label">
-				<span class="glyphicon glyphicon-gift"></span> Exchange
+				<span class="glyphicon glyphicon-gift"></span> Exchange*
 			</label>
 		</div>
 		</br>
@@ -194,8 +194,10 @@
 					<div class="row" ng-show="delivery">
 						<label for="addClause" class="col-sm-3 col-md-2">Date of sending  </label>
 						<span class="col-sm-9 col-md-10"><div class='input-group date' id='datetimepicker'>
-
-						<input  type='date' ng-model="form.deliveryDatefrom" class="form-control col-md-10"/>
+						<span class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</span>
+						<input type='date' ng-model="form.deliveryDatefrom" class="form-control"/>
 					</div></span><br/><br/><br/>
 					</div>
 					<div class="row" ng-show="delivery">
@@ -220,7 +222,7 @@
 					<div class="row" ng-show="inperson">
 						<label for="addClause" class="col-sm-3 col-md-2">When exchange  </label>
 						<span class="col-sm-9 col-md-10"><div class='input-group date' id='datetimepicker'>
-						<span class="input-group-addon">
+					  <span class="input-group-addon">
 							<span class="glyphicon glyphicon-calendar"></span>
 						</span>
 						<input type='date' ng-model="form.inpersonWhen" class="form-control"/>
@@ -243,7 +245,9 @@
 					<div class="row" ng-show="electronically">
 						<label for="addClause" class="col-sm-3 col-md-2">When of sending  </label>
 						<span class="col-sm-9 col-md-10"><div class='input-group date' id='datetimepicker8' >
-
+                       <span class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</span>
 						<input type='date' ng-model="form.electronicallyWhenfrom" class="form-control"/>
 					</div></span><br/><br/><br/>
 					</div>
@@ -280,7 +284,7 @@
 		<div class="form-group panel-success">
 			<div class="panel-heading">
 				<label class="control-label">
-					<span class="glyphicon glyphicon-leaf"></span> Implementisg modalities
+					<span class="glyphicon glyphicon-leaf"></span> Implementing modalities*
 				</label>
 			</div>
 			</br>
@@ -321,7 +325,7 @@
 		<div class="form-group panel-success">
 			<div class="panel-heading">
 				<label class="control-label">
-					<span class="glyphicon glyphicon-fire"></span> Termination modalities
+					<span class="glyphicon glyphicon-fire"></span> Termination modalities*
 				</label>
 			</div>
 			</br>
